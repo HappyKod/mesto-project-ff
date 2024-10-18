@@ -9,12 +9,10 @@
 // @todo: Вывести карточки на страницу
 
 
-const deleteCard = (event) => {
-    event.target.parentElement.remove();
-}
+const deleteCard = event => event.target.closest('.card').remove()
 
 const createCard = (cardData, deleteCallback) => {
-    let templateCard = document.querySelector("#card-template").content.cloneNode(true);
+    const templateCard = document.querySelector("#card-template").content.cloneNode(true);
     let card = templateCard.querySelector(".card");
     let cardImage = card.querySelector(".card__image");
     let cardTitle = card.querySelector(".card__title");
