@@ -3,6 +3,7 @@ import {initialCards} from "./components/cards.js";
 import {createCard, deleteCard, likeCard,} from "./components/card.js";
 import {closePopup, openPopup} from "./components/popup";
 import {getProfile} from "./components/profile";
+import {clearValidation, enableValidation} from "./components/validation";
 
 
 const cards = document.querySelector(".places__list")
@@ -19,6 +20,14 @@ const popupCardImage = document.querySelector(".popup_type_image")
 const popupImg = popupCardImage.querySelector(".popup__image");
 const popupDescription = popupCardImage.querySelector(".popup__caption");
 
+export const validationConfig = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+}
 
 popupEditProfile.addEventListener("click", (evt) => {
     if (evt.target.classList.contains("popup__close")) {
@@ -56,7 +65,6 @@ export const createPopupEditProfileForm = () => {
 
 // popup add card
 export const createPopupAddCardForm = () => {
-
     popupAddCardForm.addEventListener("submit", (evt) => {
         evt.preventDefault();
         if (popupAddCardForm["place-name"].value !== "" && popupAddCardForm.link.value !== "") {
@@ -69,6 +77,7 @@ export const createPopupAddCardForm = () => {
                     likeCard,
                     openPopupImgCard));
             popupAddCardForm.reset();
+            clearValidation(popupAddCardForm, validationConfig);
             closePopup(popupNewCard)
         }
     })
@@ -83,11 +92,14 @@ export const createPopupImgCard = (card) => {
     return popupCardImage
 }
 
+clearValidation(popupAddCardForm, validationConfig);
 newCardBtn.addEventListener("click", () => {
     openPopup(createPopupAddCardForm())
 })
 
+
 editProfileBtn.addEventListener("click", () => {
+    clearValidation(popupEditProfileForm, validationConfig, false);
     openPopup(createPopupEditProfileForm());
 })
 
@@ -98,3 +110,5 @@ const openPopupImgCard = (card) => {
 initialCards.forEach(elm => {
     cards.append(createCard(elm, deleteCard, likeCard, openPopupImgCard));
 })
+
+enableValidation(validationConfig);
