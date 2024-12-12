@@ -34,7 +34,7 @@ export const clearValidation = (form, config, disableSubmit = true) => {
     const inputList = Array.from(form.querySelectorAll(config.inputSelector));
     const submitButton = form.querySelector(config.submitButtonSelector);
     inputList.forEach((inputElement) => {
-        hideInputError(inputElement, form, config.inputErrorClass);
+        hideInputError(inputElement, form, config.errorClass, config.inputErrorClass);
     })
     if (disableSubmit) {
         submitButton.classList.add(config.inactiveButtonClass);
@@ -64,22 +64,25 @@ const validationForm = (form, config) => {
     const inputList = Array.from(form.querySelectorAll(config.inputSelector));
     inputList.forEach((inputElement) => {
         inputElement.addEventListener('input', () => {
-            validateInput(inputElement, form, config.errorClass);
+            validateInput(inputElement, form, config.errorClass, config.inputErrorClass);
             toggleButtonState(inputList, form.querySelector(config.submitButtonSelector), config.inactiveButtonClass)
         })
     })
 
 
 }
+
 /**
  * @param {HTMLInputElement} inputElement
  * @param {HTMLFormElement} form
  * @param {string} errorClass
+ * @param {string} inputErrorClass
  */
-const hideInputError = (inputElement, form, errorClass) => {
+const hideInputError = (inputElement, form, errorClass, inputErrorClass) => {
     const err = form.querySelector(`.${inputElement.name}-error`);
     err.classList.remove(errorClass);
     err.textContent = "";
+    inputElement.classList.remove(inputErrorClass);
 };
 
 /**
@@ -87,11 +90,13 @@ const hideInputError = (inputElement, form, errorClass) => {
  * @param {HTMLFormElement} form
  * @param {string} errorMessage
  * @param {string} errorClass
+ * @param {string} inputErrorClass
  */
-const showInputError = (inputElement, form, errorMessage, errorClass) => {
+const showInputError = (inputElement, form, errorMessage, errorClass, inputErrorClass) => {
     const err = form.querySelector(`.${inputElement.name}-error`);
     err.classList.add(errorClass);
     err.textContent = errorMessage;
+    inputElement.classList.add(inputErrorClass);
 };
 /**
  * Validate input
@@ -99,19 +104,20 @@ const showInputError = (inputElement, form, errorMessage, errorClass) => {
  * @param {HTMLInputElement} inputElement
  * @param {HTMLFormElement} form
  * @param {string} errorClass
+ * @param {string} inputErrorClass
  *
  * @return {boolean}
  */
-const validateInput = (inputElement, form, errorClass) => {
+const validateInput = (inputElement, form, errorClass, inputErrorClass) => {
     if (!inputElement.validity.valid) {
         let errorMessage = inputElement.validationMessage;
         if (inputElement.validity.patternMismatch) {
             errorMessage = inputElement.dataset.errorMessage;
         }
-        showInputError(inputElement, form, errorMessage, errorClass);
+        showInputError(inputElement, form, errorMessage, errorClass, inputErrorClass);
         return false;
     }
-    hideInputError(inputElement, form, errorClass)
+    hideInputError(inputElement, form, errorClass, inputErrorClass)
     return true;
 }
 
