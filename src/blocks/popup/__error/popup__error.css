@@ -1,9 +1,13 @@
 .popup__error {
-  min-height: 28px;
   display: block;
   visibility: hidden;
   color: red;
   font-size: 12px;
+  min-height: 14px;
+}
+
+.popup__error-long {
+  min-height: 28px;
 }
 
 .popup__error_visible {
