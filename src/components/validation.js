@@ -120,8 +120,6 @@ const validateInput = (inputElement, form, errorClass, inputErrorClass) => {
  */
 const hasInvalidInput = (inputList) => {
     return inputList.some((inputElement) => {
-        console.log(inputElement);
-        console.log(inputElement.validity.valid);
         return !inputElement.validity.valid;
     })
 };
