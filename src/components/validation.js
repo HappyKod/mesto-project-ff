@@ -28,21 +28,12 @@ export const enableValidation = (config) => {
  * @param {string} config.inputErrorClass
  * @param {string} config.errorClass
  *
- * @param {boolean} disableSubmit
  */
-export const clearValidation = (form, config, disableSubmit = true) => {
+export const clearValidation = (form, config) => {
     const inputList = Array.from(form.querySelectorAll(config.inputSelector));
-    const submitButton = form.querySelector(config.submitButtonSelector);
     inputList.forEach((inputElement) => {
         hideInputError(inputElement, form, config.errorClass, config.inputErrorClass);
     })
-    if (disableSubmit) {
-        submitButton.classList.add(config.inactiveButtonClass);
-        submitButton.disabled = true;
-    } else {
-        submitButton.classList.remove(config.inactiveButtonClass);
-        submitButton.disabled = false;
-    }
 
 }
 
@@ -129,6 +120,8 @@ const validateInput = (inputElement, form, errorClass, inputErrorClass) => {
  */
 const hasInvalidInput = (inputList) => {
     return inputList.some((inputElement) => {
+        console.log(inputElement);
+        console.log(inputElement.validity.valid);
         return !inputElement.validity.valid;
     })
 };
@@ -138,7 +131,7 @@ const hasInvalidInput = (inputList) => {
  * @param {HTMLElement} buttonElement
  * @param {string} classToggle
  */
-const toggleButtonState = (inputList, buttonElement, classToggle) => {
+export const toggleButtonState = (inputList, buttonElement, classToggle) => {
     if (hasInvalidInput(inputList)) {
         buttonElement.disabled = true;
         buttonElement.classList.add(classToggle);

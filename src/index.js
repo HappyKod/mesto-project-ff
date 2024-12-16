@@ -2,7 +2,7 @@ import "./pages/index.css";
 import {createCard, deleteCard, likeCard,} from "./components/card.js";
 import {closePopup, openPopup} from "./components/popup";
 import {getProfile, initProfile} from "./components/profile";
-import {clearValidation, enableValidation} from "./components/validation";
+import {clearValidation, enableValidation, toggleButtonState} from "./components/validation";
 import {
     createCardAPI,
     deleteCardAPI,
@@ -13,6 +13,7 @@ import {
     getInitProfileAPI,
     likeCardAPI
 } from "./components/api";
+import {validationConfig as config, validationConfig} from "./components/constans";
 
 const btnTextProcessSave = "Сохранение..."
 
@@ -34,43 +35,18 @@ const popupDescription = popupCardImage.querySelector(".popup__caption");
 
 const profileImage = document.querySelector(".profile__image");
 
-export const validationConfig = {
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_disabled',
-    inputErrorClass: 'popup__input_type_error',
-    errorClass: 'popup__error_visible'
-}
+const closeButtons = document.querySelectorAll('.popup__close');
 
-popupEditProfile.addEventListener("click", (evt) => {
-    if (evt.target.classList.contains("popup__close")) {
-        closePopup(popupEditProfile)
-    }
-})
+closeButtons.forEach((button) => {
+    const popup = button.closest('.popup');
+    button.addEventListener('click', () => closePopup(popup));
+});
 
-popupNewCard.addEventListener("click", (evt) => {
-    if (evt.target.classList.contains("popup__close")) {
-        closePopup(popupNewCard)
-    }
-})
-
-popupCardImage.addEventListener("click", (evt) => {
-    if (evt.target.classList.contains("popup__close")) {
-        closePopup(popupCardImage)
-    }
-})
-
-popupEditProfileImage.addEventListener("click", (evt) => {
-    if (evt.target.classList.contains("popup__close")) {
-        closePopup(popupEditProfileImage)
-    }
-})
 
 const deleteCardCallback = (event, cardID) => {
     deleteCardAPI(cardID)
         .then(() => deleteCard(event))
-        .catch((error) => console.error("Error:", error));
+        .catch(console.error);
 }
 
 const likeCardCallback = (event, cardID, isLiked) => {
@@ -79,25 +55,18 @@ const likeCardCallback = (event, cardID, isLiked) => {
             .then((json) => {
                 likeCard(event, json.likes.length);
             })
-            .catch((error) => console.log("Error:", error));
+            .catch(console.error);
 
     } else {
         likeCardAPI(cardID)
             .then((json) => {
                 likeCard(event, json.likes.length);
             })
-            .catch((error) => console.log("Error:", error));
+            .catch(console.error);
     }
 }
 
 
-// popup edit profile
-export const createPopupEditProfileForm = () => {
-    const profile = getProfile()
-    popupEditProfileForm.name.value = profile.name;
-    popupEditProfileForm.description.value = profile.about;
-    return popupEditProfile
-}
 popupEditProfileForm.addEventListener("submit", (evt) => {
     evt.preventDefault();
     const btn = evt.target.querySelector(".button")
@@ -110,9 +79,9 @@ popupEditProfileForm.addEventListener("submit", (evt) => {
         .then((profile) => {
             initProfile(profile);
             closePopup(popupEditProfile);
-            btn.textContent = defaultBtnText;
         })
-        .catch((error) => console.error("Error:", error))
+        .catch(console.error)
+        .finally(btn.textContent = defaultBtnText);
 })
 
 popupAddCardForm.addEventListener("submit", (evt) => {
@@ -132,11 +101,10 @@ popupAddCardForm.addEventListener("submit", (evt) => {
                     openPopupImgCard,
                     newCard.owner._id));
             popupAddCardForm.reset();
-            clearValidation(popupAddCardForm, validationConfig);
             closePopup(popupNewCard);
-            btn.textContent = defaultBtnText;
         })
-        .catch((error) => console.log('Error:', error))
+        .catch(console.error)
+        .finally(btn.textContent = defaultBtnText);
 })
 
 // popup view image card
@@ -149,13 +117,26 @@ export const createPopupImgCard = (card) => {
 
 clearValidation(popupAddCardForm, validationConfig);
 newCardBtn.addEventListener("click", () => {
+    toggleButtonState(
+        Array.from(popupAddCardForm.querySelectorAll(config.inputSelector)),
+        popupAddCardForm.querySelector(".button"),
+        config.inactiveButtonClass
+    );
     openPopup(popupNewCard)
 })
 
 
 editProfileBtn.addEventListener("click", () => {
-    clearValidation(popupEditProfileForm, validationConfig, false);
-    openPopup(createPopupEditProfileForm());
+    clearValidation(popupEditProfileForm, validationConfig);
+    const profile = getProfile()
+    popupEditProfileForm.name.value = profile.name;
+    popupEditProfileForm.description.value = profile.about;
+    toggleButtonState(
+        Array.from(popupEditProfileForm.querySelectorAll(config.inputSelector)),
+        popupEditProfileForm.querySelector(".button"),
+        config.inactiveButtonClass
+    );
+    openPopup(popupEditProfile);
 })
 
 const openPopupImgCard = (card) => {
@@ -169,7 +150,7 @@ Promise.all([getInitialCardsAPI, getInitProfileAPI])
             cards.append(createCard(elm, deleteCardCallback, likeCardCallback, openPopupImgCard, profile._id));
         });
     })
-    .catch((error) => console.log('Error:', error))
+    .catch(console.error)
 
 popupEditProfileImageForm.addEventListener("submit", (evt) => {
     evt.preventDefault();
@@ -181,13 +162,19 @@ popupEditProfileImageForm.addEventListener("submit", (evt) => {
             initProfile(profile);
             evt.target.reset();
             closePopup(popupEditProfileImage);
-            btn.textContent = defaultBtnText;
         })
-        .catch((error) => console.log("Error:", error))
+        .catch(console.error)
+        .finally(btn.textContent = defaultBtnText);
 })
 
+
 profileImage.addEventListener("click", () => {
-    clearValidation(popupEditProfileImageForm, validationConfig, true);
+    clearValidation(popupEditProfileImageForm, validationConfig);
+    toggleButtonState(
+        Array.from(popupEditProfileImageForm.querySelectorAll(config.inputSelector)),
+        popupEditProfileImageForm.querySelector(".button"),
+        config.inactiveButtonClass
+    );
     openPopup(popupEditProfileImage)
 })
 
