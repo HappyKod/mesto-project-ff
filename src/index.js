@@ -81,7 +81,7 @@ popupEditProfileForm.addEventListener("submit", (evt) => {
             closePopup(popupEditProfile);
         })
         .catch(console.error)
-        .finally(btn.textContent = defaultBtnText);
+        .finally(() => btn.textContent = defaultBtnText);
 })
 
 popupAddCardForm.addEventListener("submit", (evt) => {
@@ -104,7 +104,7 @@ popupAddCardForm.addEventListener("submit", (evt) => {
             closePopup(popupNewCard);
         })
         .catch(console.error)
-        .finally(btn.textContent = defaultBtnText);
+        .finally(() => btn.textContent = defaultBtnText);
 })
 
 // popup view image card
@@ -164,7 +164,7 @@ popupEditProfileImageForm.addEventListener("submit", (evt) => {
             closePopup(popupEditProfileImage);
         })
         .catch(console.error)
-        .finally(btn.textContent = defaultBtnText);
+        .finally(() => btn.textContent = defaultBtnText);
 })
 
 
